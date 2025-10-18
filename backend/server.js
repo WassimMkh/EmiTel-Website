@@ -34,7 +34,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
-
+app.options("*", cors());
 
 securityMiddleware(app);
 
