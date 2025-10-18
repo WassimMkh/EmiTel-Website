@@ -82,7 +82,9 @@ export default function StepperForm({ onClose }) {
         Object.entries(sanitizedData).filter(([k]) => allowedKeys.includes(k))
       );
 
-      fetch("http://localhost:10000/api/NewMembers", {
+
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+      fetch(`${apiBaseUrl}/api/NewMembers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
