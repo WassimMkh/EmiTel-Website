@@ -55,37 +55,46 @@ const formSchema = z.object({
 
 
 const sendWelcomeEmail = async ({ name, email, cellule }) => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn("EMAIL_USER or EMAIL_PASS not set, skipping email");
+    return;
+  }
 
-  const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  try {
+    const transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-  const html = `
-    <h2>Bonjour ${name},</h2>
-    <p>Nous avons bien reçu votre candidature pour rejoindre le club <b>EMI Tel</b>.</p>
-    <p>Votre cellule choisie : <b>${cellule}</b></p>
-    <p>Nous étudierons votre candidature et vous contacterons bientôt avec la suite du processus.</p>
-    <br/>
-    <p>Cordialement,<br>L'équipe Emi Tel</p>
-  `;
+    const html = `
+      <h2>Bonjour ${name},</h2>
+      <p>Nous avons bien reçu votre candidature pour rejoindre le club <b>EMI Tel</b>.</p>
+      <p>Votre cellule choisie : <b>${cellule}</b></p>
+      <p>Nous étudierons votre candidature et vous contacterons bientôt avec la suite du processus.</p>
+      <br/>
+      <p>Cordialement,<br>L'équipe Emi Tel</p>
+    `;
 
-  await transporter.sendMail({
-    from: `"Emi Tel" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: "Confirmation de réception de votre candidature Emi Tel",
-    html,
-  });
+    const info = await transporter.sendMail({
+      from: `"Emi Tel" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Confirmation de réception de votre candidature Emi Tel",
+      html,
+    });
 
+    console.log(`✅ Welcome email sent to ${email}, messageId: ${info.messageId}`);
+  } catch (err) {
+    console.error("❌ Email sending failed:", err);
+  }
 };
 
 
 router.post("/", formLimiter, async (req, res) => {
   try {
+    
     const payload = formSchema.parse(req.body);
     const { email, phone } = payload;
 
@@ -116,14 +125,11 @@ router.post("/", formLimiter, async (req, res) => {
     const membre = new Membre(payload);
     await membre.save();
 
-    sendWelcomeEmail(payload).catch((err) => {
-      console.error("Email sending failed:", err.message);
-    });
-
+    sendWelcomeEmail(payload);
 
     return res.status(201).json({
       success: true,
-      message: "Données enregistrées avec succès",
+      message: "Données enregistrées avec succès. Un email de confirmation a été envoyé.",
     });
   } catch (err) {
     console.error("Form submission error:", err);
@@ -131,7 +137,7 @@ router.post("/", formLimiter, async (req, res) => {
     if (err instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
-        errors: (err.errors || []).map((e) => ({
+        errors: err.errors.map((e) => ({
           path: e.path.join("."),
           message: e.message,
         })),
