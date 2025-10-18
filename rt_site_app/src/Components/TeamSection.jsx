@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-
+import { motion } from "framer-motion";
 import teamImg from "../assets/team_image.jpg";
 
 export default function TeamSection() {

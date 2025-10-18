@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import DOMPurify from "dompurify";
+import { motion } from "framer-motion";
 import {
   Check,
   XCircle,
