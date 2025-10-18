@@ -74,7 +74,7 @@ export default function Navbar() {
       </button>
       {isOpen && (
         <div className="absolute top-16 left-0 w-full backdrop-blur-md bg-white/95 p-4 flex flex-col gap-4 md:hidden shadow-lg border-t border-[var(--border)] divide-y divide-[var(--border)]">
-          <a href="#" className="flex items-center gap-2 px-3 py-2 hover:text-[var(--primary)] hover:bg-[var(--primary-bg)]"><House className="w-5 h-5" />Accueil</a>
+          <a href="/" className="flex items-center gap-2 px-3 py-2 hover:text-[var(--primary)] hover:bg-[var(--primary-bg)]"><House className="w-5 h-5" />Accueil</a>
           <a href="#" className="flex items-center gap-2 px-3 py-2 hover:text-[var(--primary)] hover:bg-[var(--primary-bg)]"><GraduationCap className="w-5 h-5" />Filiére</a>
           <a href="/members"className="flex items-center gap-2 px-3 py-2 hover:text-[var(--primary)] hover:bg-[var(--primary-bg)]"><UsersRound className="w-5 h-5" />Bureau</a>
           <a href="#" className="flex items-center gap-2 px-3 py-2 hover:text-[var(--primary)] hover:bg-[var(--primary-bg)]"><Brain className="w-5 h-5" />Projets</a>
