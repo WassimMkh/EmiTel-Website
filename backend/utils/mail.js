@@ -1,24 +1,23 @@
 import nodemailer from "nodemailer";
 
-export const sendMail = async (to, subject, html) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+export const sendEmail = async (to, subject, html) => {
+  const transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SERVICE || undefined,
+    host: process.env.EMAIL_HOST || undefined,
+    port: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
-      to,
-      subject,
-      html,
-    });
+  const mailOptions = {
+    from: `"EmiTel Club" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    html,
+  };
 
-    console.log(`Email sent to ${to}`);
-  } catch (error) {
-    console.error("Email sending failed:", error.message);
-  }
+  await transporter.sendMail(mailOptions);
 };
