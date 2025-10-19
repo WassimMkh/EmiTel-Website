@@ -67,9 +67,7 @@ const sendWelcomeEmail = async ({ name, email, cellule }) => {
       <p>Votre cellule choisie : <b>${cellule}</b></p>
       <p>Nous étudierons votre candidature et vous contacterons bientôt avec la suite du processus.</p>
 
-      <div style="margin: 30px 0; text-align: center;">
-        <img src="https://raw.githubusercontent.com/WassimMkh/emitel-assets/refs/heads/main/emails/images/team_image.jpg" alt="Bienvenue" style="width: 100%; max-width: 600px; border-radius: 8px;">
-      </div>
+     
 
       <p style="font-size: 14px; color: #666;">Cordialement,<br><b>L'équipe Emi Tel</b></p>
 
