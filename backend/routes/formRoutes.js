@@ -2,7 +2,7 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
 import Membre from "../models/Membre.js";
-import { sendEmail } from "../utils/sendEmail.js";
+import { sendEmail } from "../utils/mail.js";
 
 const router = express.Router();
 
