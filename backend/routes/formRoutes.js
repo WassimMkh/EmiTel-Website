@@ -58,12 +58,36 @@ const sendWelcomeEmail = async ({ name, email, cellule }) => {
   }
 
   const html = `
-    <h2>Bonjour ${name},</h2>
-    <p>Nous avons bien reçu votre candidature pour rejoindre le club <b>EMI Tel</b>.</p>
-    <p>Votre cellule choisie : <b>${cellule}</b></p>
-    <p>Nous étudierons votre candidature et vous contacterons bientôt avec la suite du processus.</p>
-    <br/>
-    <p>Cordialement,<br>L'équipe Emi Tel</p>
+    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5;">
+      <div style="text-align: center; padding: 20px;">
+        <img src="https://raw.githubusercontent.com/WassimMkh/emitel-assets/refs/heads/main/emails/images/logo.png" alt="EmiTel Club" style="width: 120px; margin-bottom: 10px;">
+      </div>
+      <h2 style="color: #004aad;">Bonjour ${name},</h2>
+      <p>Merci d'avoir postulé pour rejoindre le club <b>EMI Tel</b> !</p>
+      <p>Votre cellule choisie : <b>${cellule}</b></p>
+      <p>Nous étudierons votre candidature et vous contacterons bientôt avec la suite du processus.</p>
+
+      <div style="margin: 30px 0; text-align: center;">
+        <img src="https://raw.githubusercontent.com/WassimMkh/emitel-assets/refs/heads/main/emails/images/team_image.jpg" alt="Bienvenue" style="width: 100%; max-width: 600px; border-radius: 8px;">
+      </div>
+
+      <p style="font-size: 14px; color: #666;">Cordialement,<br><b>L'équipe Emi Tel</b></p>
+
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+
+      <div style="text-align: center;">
+        <a href="https://www.instagram.com/emi_tel_/" style="margin: 0 8px;">
+          <img src="https://raw.githubusercontent.com/WassimMkh/emitel-assets/refs/heads/main/emails/images/instagram.png" alt="Instagram" width="24">
+        </a>
+        <a href="https://www.linkedin.com/company/emitelclub/" style="margin: 0 8px;">
+          <img src="https://raw.githubusercontent.com/WassimMkh/emitel-assets/refs/heads/main/emails/images/linkedin.png" alt="LinkedIn" width="24">
+        </a>
+      </div>
+
+      <p style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
+        © ${new Date().getFullYear()} EMI Tel Club. Tous droits réservés.
+      </p>
+    </div>
   `;
 
   await sendEmail(
@@ -72,6 +96,7 @@ const sendWelcomeEmail = async ({ name, email, cellule }) => {
     html
   );
 };
+
 
 router.post("/", formLimiter, async (req, res) => {
   try {
