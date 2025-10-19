@@ -2,10 +2,9 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
 import Membre from "../models/Membre.js";
-import nodemailer from "nodemailer";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
-
 
 const formLimiter = rateLimit({
   windowMs: 2 * 60 * 1000, 
@@ -55,50 +54,29 @@ const formSchema = z.object({
 
 
 const sendWelcomeEmail = async ({ name, email, cellule }) => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn("EMAIL_USER or EMAIL_PASS not set, skipping email");
-    return;
-  }
+  const html = `
+    <h2>Bonjour ${name},</h2>
+    <p>Nous avons bien reçu votre candidature pour rejoindre le club <b>EMI Tel</b>.</p>
+    <p>Votre cellule choisie : <b>${cellule}</b></p>
+    <p>Nous étudierons votre candidature et vous contacterons bientôt avec la suite du processus.</p>
+    <br/>
+    <p>Cordialement,<br>L'équipe Emi Tel</p>
+  `;
 
-  try {
-    const transporter = nodemailer.createTransport({
-      service: process.env.EMAIL_SERVICE || "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const html = `
-      <h2>Bonjour ${name},</h2>
-      <p>Nous avons bien reçu votre candidature pour rejoindre le club <b>EMI Tel</b>.</p>
-      <p>Votre cellule choisie : <b>${cellule}</b></p>
-      <p>Nous étudierons votre candidature et vous contacterons bientôt avec la suite du processus.</p>
-      <br/>
-      <p>Cordialement,<br>L'équipe Emi Tel</p>
-    `;
-
-    const info = await transporter.sendMail({
-      from: `"Emi Tel" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Confirmation de réception de votre candidature Emi Tel",
-      html,
-    });
-
-    console.log(`✅ Welcome email sent to ${email}, messageId: ${info.messageId}`);
-  } catch (err) {
-    console.error("❌ Email sending failed:", err);
-  }
+  await sendEmail(
+    email,
+    "Confirmation de réception de votre candidature Emi Tel",
+    html
+  );
 };
 
 
 router.post("/", formLimiter, async (req, res) => {
   try {
-    
     const payload = formSchema.parse(req.body);
     const { email, phone } = payload;
 
-    
+   
     const minutesWindow = parseInt(process.env.RECENT_WINDOW_MINUTES || "2", 10);
     const recentCutoff = new Date(Date.now() - minutesWindow * 60 * 1000);
 
@@ -114,6 +92,7 @@ router.post("/", formLimiter, async (req, res) => {
       });
     }
 
+  
     const existing = await Membre.findOne({ $or: [{ email }, { phone }] });
     if (existing) {
       return res.status(400).json({
@@ -122,10 +101,12 @@ router.post("/", formLimiter, async (req, res) => {
       });
     }
 
+ 
     const membre = new Membre(payload);
     await membre.save();
 
-    sendWelcomeEmail(payload);
+   
+    await sendWelcomeEmail(payload);
 
     return res.status(201).json({
       success: true,
