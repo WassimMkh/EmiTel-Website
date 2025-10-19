@@ -14,7 +14,6 @@ const formLimiter = rateLimit({
   message: "Trop de tentatives, veuillez réessayer plus tard.",
 });
 
-
 const formSchema = z.object({
   name: z
     .string()
@@ -52,7 +51,6 @@ const formSchema = z.object({
   ]),
 });
 
-
 const sendWelcomeEmail = async ({ name, email, cellule }) => {
   const html = `
     <h2>Bonjour ${name},</h2>
@@ -70,13 +68,12 @@ const sendWelcomeEmail = async ({ name, email, cellule }) => {
   );
 };
 
-
 router.post("/", formLimiter, async (req, res) => {
   try {
     const payload = formSchema.parse(req.body);
     const { email, phone } = payload;
 
-   
+  
     const minutesWindow = parseInt(process.env.RECENT_WINDOW_MINUTES || "2", 10);
     const recentCutoff = new Date(Date.now() - minutesWindow * 60 * 1000);
 
@@ -92,7 +89,7 @@ router.post("/", formLimiter, async (req, res) => {
       });
     }
 
-  
+
     const existing = await Membre.findOne({ $or: [{ email }, { phone }] });
     if (existing) {
       return res.status(400).json({
@@ -101,19 +98,21 @@ router.post("/", formLimiter, async (req, res) => {
       });
     }
 
- 
     const membre = new Membre(payload);
     await membre.save();
 
-   
-    await sendWelcomeEmail(payload);
+    sendWelcomeEmail(payload).catch((err) =>
+      console.error("Erreur envoi email:", err)
+    );
 
     return res.status(201).json({
       success: true,
-      message: "Données enregistrées avec succès. Un email de confirmation a été envoyé.",
+      message:
+        "Données enregistrées avec succès. Un email de confirmation a été envoyé.",
     });
   } catch (err) {
     console.error("Form submission error:", err);
+
 
     if (err instanceof z.ZodError) {
       return res.status(400).json({

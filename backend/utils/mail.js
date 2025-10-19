@@ -8,14 +8,14 @@ export const sendEmail = async (to, subject, html) => {
   try {
     const { data, error } = await resend.emails.send({
       from: "EmiTel Club <onboarding@resend.dev>", 
-      to,
       subject,
       html,
     });
 
     if (error) throw error;
-    console.log("Email sent:", data);
+
+    return data;
   } catch (err) {
-    console.error("Email sending failed:", err);
+    throw new Error("Email sending failed: " + err.message);
   }
 };
