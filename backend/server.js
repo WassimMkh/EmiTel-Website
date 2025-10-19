@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 
 
-app.disable("x-powered-by");
+app.set("trust proxy", 1);
 
 
 app.use(express.json({ limit: "10kb" }));

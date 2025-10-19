@@ -52,6 +52,11 @@ const formSchema = z.object({
 });
 
 const sendWelcomeEmail = async ({ name, email, cellule }) => {
+  if (!email) {
+    console.error("Missing email in sendWelcomeEmail payload:", { name, email, cellule });
+    throw new Error("Email field missing when sending welcome email");
+  }
+
   const html = `
     <h2>Bonjour ${name},</h2>
     <p>Nous avons bien reçu votre candidature pour rejoindre le club <b>EMI Tel</b>.</p>
